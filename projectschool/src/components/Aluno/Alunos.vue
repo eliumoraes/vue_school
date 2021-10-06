@@ -1,8 +1,9 @@
 <template>
   <div>
     <!-- <h1>{{ titulo }}</h1> -->
-    <Titulo titulo="Alunos" />
-    <div>
+    <Titulo
+    :titulo="teacherId !== undefined ? 'Alunos do professor ' + professor.nome : 'Todos os alunos'" />
+    <div v-if="teacherId !== undefined">
       <input
         type="text"
         placeholder="Nome do aluno"
@@ -22,7 +23,13 @@
         <tr v-for="(aluno, index) in alunos" :key="index">
           <!-- <td>{{ index + 1 }}</td> -->
           <td>{{ aluno.id }}</td>
-          <td>{{ aluno.nome }} {{ aluno.sobrenome }}</td>
+          <router-link
+            :to="`/alunoDetalhe/${aluno.id}`"
+            tag="td"
+            style="cursor: pointer"
+          >
+            {{ aluno.nome }} {{ aluno.sobrenome }}
+          </router-link>
           <td>
             <button class="btn btn_Danger" @click="remover(aluno)">
               Remover
@@ -39,6 +46,9 @@
 
 <script>
 import Titulo from "../_shared/Titulo.vue";
+import urlJsonServer from '../global';
+// Acessando os alunos do professor 1 --->
+// ${urlJsonServer}/teachers/1/students
 
 export default {
   components: {
@@ -48,38 +58,82 @@ export default {
     return {
       titulo: "Aluno",
       nome: "",
+      professor: {},
       alunos: [],
+      teacherId: this.$route.params.teacherId,
     };
   },
 
   created() {
-    this.$http
-      .get("http://localhost:3000/alunos")
-      .then((res) => res.json())
-      .then((alunos) => (this.alunos = alunos));
+    if (this.teacherId) {
+      this.carregarProfessor(this.teacherId);
+      this.$http
+        .get(`${urlJsonServer}/teachers/${this.teacherId}/students`)
+        .then((res) => res.json())
+        .then((alunos) => (this.alunos = alunos));
+    } else {
+      this.$http
+        .get(`${urlJsonServer}/students`)
+        .then((res) => res.json())
+        .then((alunos) => (this.alunos = alunos));
+    }
   },
 
   props: {},
   methods: {
+    preparaSobrenome() {
+      // Transforma o nome numa array
+      const nomeCompleto = this.nome.split(' ')
+      // Pega o primeiro elemento da array
+      const nome = nomeCompleto[0]
+      // Remove o primeiro elemento da array
+      nomeCompleto.shift()
+      // Transforma a array em string separando por espaços
+      const sobrenome = nomeCompleto.join(' ')
+
+      // Logs para testar
+      // console.log(this.nome)
+      // console.log(nome)
+      // console.log(sobrenome)
+
+      return {
+        nome: nome,
+        sobrenome: sobrenome
+      }
+    },
     addAluno() {
       let _aluno = {
-        nome: this.nome,
-        sobrenome: "",
+        nome: this.preparaSobrenome().nome,
+        sobrenome: this.preparaSobrenome().sobrenome,
+        teacherId: Number(this.teacherId)
       };
 
       this.$http
-        .post("http://localhost:3000/alunos", _aluno)
+        .post(`${urlJsonServer}/students`, _aluno)
         .then((res) => res.json())
         .then((alunoRetornado) => {
           this.alunos.push(alunoRetornado);
         });
+
+      this.nome = null;
     },
 
     remover(aluno) {
-      this.$http.delete(`http://localhost:3000/alunos/${aluno.id}`).then(() => {
-        let indice = this.alunos.indexOf(aluno);
-        this.alunos.splice(indice, 1);
-      });
+      this.$http
+        .delete(`${urlJsonServer}/students/${aluno.id}`)
+        .then(() => {
+          let indice = this.alunos.indexOf(aluno);
+          this.alunos.splice(indice, 1);
+        });
+    },
+
+    carregarProfessor(professorId) {
+      this.$http
+        .get(`${urlJsonServer}/teachers/${professorId}`)
+        .then((res) => res.json())
+        .then((professor) => {
+          this.professor = professor;
+        });
     },
   },
 };
@@ -92,6 +146,7 @@ Nesse formato o codigo css fica limitado apenas ao escopo deste arquivo
 -->
 <style scoped>
 input {
+  width: calc(100% - 195px);
   border: 0;
   padding: 20px;
   font-size: 1.3em;

@@ -1,16 +1,25 @@
 <template>
   <div id="app">
-    <Alunos />
+    <Nav />
+    <div class="marginPrincipal">
+      <router-view :key="$route.fullPath" />
+    </div>
   </div>
 </template>
 
 <script>
-import Alunos from "./components/Aluno/Alunos.vue";
+import Nav from "./components/_nav/Nav.vue";
+// import Alunos from "./components/Aluno/Alunos.vue";
+// import Professores from "./components/Professor/Professores.vue";
+// import Sobre from "./components/Sobre/Sobre.vue";
 
 export default {
   name: "App",
   components: {
-    Alunos,
+    Nav,
+    // Alunos,
+    // Professores,
+    // Sobre,
   },
 };
 </script>
@@ -24,19 +33,27 @@ body {
   justify-items: center;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   height: 100%;
 }
 
+.marginPrincipal {
+  width: 50%;
+  margin: auto;
+}
+
 #app {
+  width: 100%;
 }
 
-.btn_Danger{
+.btn_Danger {
   background-color: #fa4430;
+  font-size: 0.8em !important;
 }
 
-.btn{
+.btn {
   border: 1px solid black;
   cursor: pointer;
   padding: 10px 20px;
@@ -44,9 +61,10 @@ body, html {
   font-weight: bold;
   border-radius: 5px;
   border-bottom: 3px solid black;
+  font-size: 1.2em;
 }
 
-.btn:hover{
+.btn:hover {
   text-shadow: 1px 1px 1px black;
   margin-top: 2px;
   border-bottom: 1px solid black;
@@ -59,14 +77,14 @@ table {
   width: 100%;
 }
 
-table thead th{
+table thead th {
   background-color: rgb(184, 208, 216) !important;
   font-size: 1.2em;
-  padding: 10px 0;
+  padding: 10px;
   text-align: center !important;
 }
 
-table tr td{
+table tr td {
   padding: 20px;
   font-size: 1.3em;
   background-color: #e0edf4;
@@ -76,4 +94,26 @@ table tr td{
 .colPequeno {
   width: 5%;
 }
+
+/* Style buttons */
+.btnIcon {
+  background-color: DodgerBlue; /* Blue background */
+  border: none; /* Remove borders */
+  color: white; /* White text */
+  padding: 12px 16px; /* Some padding */
+  font-size: 16px; /* Set a font size */
+  cursor: pointer; /* Mouse pointer on hover */
+}
+
+/* Darker background on mouse-over */
+.btnIcon:hover {
+  background-color: RoyalBlue;
+}
+
+.btnR {
+  float: right;
+  margin-left: 1%;
+}
+
+
 </style>
