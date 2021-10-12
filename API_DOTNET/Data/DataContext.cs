@@ -7,8 +7,8 @@ namespace API_DOTNET.Data
     public class DataContext : DbContext
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) {}
-        public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
+        public DbSet<Student> Students { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.Entity<Teacher>()
@@ -26,13 +26,12 @@ namespace API_DOTNET.Data
                             Id = 3,
                             Nome = "Rafael"
                         }
-                    }
+                    }.ToArray()
                 );
 
             builder.Entity<Student>()
                 .HasData(
                     new List<Student>() {
-                        
                         new Student() {
                             Id = 1,
                             Nome = "Eliu",
@@ -61,7 +60,7 @@ namespace API_DOTNET.Data
                             Nascimento = "09/04/1992",
                             TeacherId = 2
                         }
-                    }
+                    }.ToArray()
                 );
         }
     }
